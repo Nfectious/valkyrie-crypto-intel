@@ -42,6 +42,9 @@ Every AI inference call: $0.00
 
 ---
 
+![initial_monitor_tab](images/Valkyrie-Crypto-Intel-Photos)
+
+---
 ## QUICK START — DOCKER
 
 ### Requirements
