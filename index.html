@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VALKYRIE // CRYPTO INTEL v2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #010608;
+  --bg2: #040d12;
+  --bg3: #071520;
+  --border: #0d2030;
+  --border2: #1a3a50;
+  --accent: #00c8ff;
+  --accent2: #ff3d00;
+  --accent3: #00ff88;
+  --warn: #ffaa00;
+  --text: #b0d0e0;
+  --text-dim: #3a6070;
+  --text-bright: #e0f0ff;
+  --bull: #00ff88;
+  --bear: #ff3d00;
+  --neutral: #ffaa00;
+  --panel: rgba(4,13,18,0.97);
+  --glow: 0 0 20px rgba(0,200,255,0.15);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Exo 2', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Grid background */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0,200,255,0.025) 49px, rgba(0,200,255,0.025) 50px),
+    repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0,200,255,0.015) 49px, rgba(0,200,255,0.015) 50px);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Scanline */
+.scanline {
+  position:fixed;
+  left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg,transparent,rgba(0,200,255,0.12),transparent);
+  animation:scan 10s linear infinite;
+  pointer-events:none;
+  z-index:1;
+}
+@keyframes scan { 0%{top:-3px} 100%{top:100vh} }
+
+.wrap { position:relative; z-index:2; max-width:1500px; margin:0 auto; padding:16px 20px; }
+
+/* ===== HEADER ===== */
+header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 22px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-bottom:2px solid var(--accent);
+  margin-bottom:16px;
+  position:relative;
+  overflow:hidden;
+}
+header::after {
+  content:'';
+  position:absolute;
+  top:0;left:-100%;
+  width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(0,200,255,0.05),transparent);
+  animation:sweep 8s ease-in-out infinite;
+}
+@keyframes sweep { 0%{left:-100%} 100%{left:200%} }
+
+.logo {
+  font-family:'Orbitron',monospace;
+  font-size:24px;
+  font-weight:900;
+  color:var(--accent);
+  letter-spacing:3px;
+  text-shadow:0 0 20px rgba(0,200,255,0.6);
+}
+.logo em { color:var(--accent2); font-style:normal; }
+
+.hdr-right {
+  display:flex;
+  align-items:center;
+  gap:20px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;
+  color:var(--text-dim);
+}
+.status-pill {
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:4px 12px;
+  border:1px solid var(--border2);
+  background:var(--bg3);
+}
+.dot {
+  width:7px;height:7px;
+  border-radius:50%;
+  background:var(--text-dim);
+}
+.dot.active { background:var(--accent3); box-shadow:0 0 8px var(--accent3); animation:blink 2s ease-in-out infinite; }
+.dot.scanning { background:var(--warn); box-shadow:0 0 8px var(--warn); animation:blink 0.5s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ===== CONFIG ROW ===== */
+.config-row {
+  display:grid;
+  grid-template-columns:1fr 180px 140px auto auto;
+  gap:10px;
+  margin-bottom:12px;
+  align-items:end;
+}
+.field { display:flex; flex-direction:column; gap:5px; }
+.field label {
+  font-size:12px;
+  letter-spacing:2px;
+  color:var(--text-dim);
+  font-family:'Share Tech Mono',monospace;
+  text-transform:uppercase;
+}
+input, select {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  color:var(--text-bright);
+  padding:7px 11px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:14px;
+  outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+  width:100%;
+}
+input:focus,select:focus {
+  border-color:var(--accent);
+  box-shadow:0 0 8px rgba(0,200,255,0.2);
+}
+select option { background:var(--bg3); }
+
+.btn {
+  padding:8px 18px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  cursor:pointer;
+  border:none;
+  transition:all 0.2s;
+  white-space:nowrap;
+  height:36px;
+}
+.btn-primary { background:var(--accent); color:var(--bg); font-weight:bold; }
+.btn-primary:hover { background:#22ddff; box-shadow:0 0 16px rgba(0,200,255,0.5); }
+.btn-primary:disabled { background:var(--text-dim); cursor:not-allowed; box-shadow:none; }
+.btn-stop { background:var(--accent2); color:#fff; }
+.btn-stop:hover { background:#ff5522; box-shadow:0 0 16px rgba(255,61,0,0.5); }
+.btn-ghost { background:transparent; color:var(--accent); border:1px solid var(--border2); }
+.btn-ghost:hover { background:rgba(0,200,255,0.07); border-color:var(--accent); }
+.btn-sm { padding:5px 12px; font-size:10px; height:26px; }
+
+/* ===== WATCHLIST ===== */
+.wl-panel {
+  background:var(--panel);
+  border:1px solid var(--border);
+  margin-bottom:12px;
+}
+.wl-top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 14px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg3);
+}
+.wl-top span {
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;
+  letter-spacing:2px;
+  color:var(--text-dim);
+  text-transform:uppercase;
+}
+.wl-tags {
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  padding:10px 14px;
+  min-height:46px;
+}
+.tag {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 9px 4px 12px;
+  background:var(--bg3);
+  border:1px solid var(--border2);
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;
+  color:var(--accent);
+}
+.tag-tf { color:var(--text-dim); font-size:12px; padding-left:6px; border-left:1px solid var(--border); }
+.tag-x { color:var(--text-dim); cursor:pointer; font-size:16px; transition:color 0.2s; }
+.tag-x:hover { color:var(--accent2); }
+.wl-add {
+  display:flex;
+  gap:8px;
+  padding:8px 14px;
+  border-top:1px solid var(--border);
+  background:var(--bg2);
+}
+.wl-add input { flex:1; }
+.wl-add select { width:90px; }
+
+/* ===== RUN BAR ===== */
+.run-bar {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:10px 16px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  margin-bottom:16px;
+}
+.countdown-wrap {
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:14px;
+  color:var(--text-dim);
+}
+.countdown-num {
+  font-size:26px;
+  font-weight:bold;
+  color:var(--accent);
+  min-width:70px;
+  font-family:'Orbitron',monospace;
+}
+.perf-log {
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;
+  color:var(--text-dim);
+  text-align:right;
+}
+
+/* ===== TABS ===== */
+.tabs {
+  display:flex;
+  gap:0;
+  margin-bottom:16px;
+  border-bottom:1px solid var(--border);
+}
+.tab {
+  padding:9px 22px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;
+  letter-spacing:2px;
+  color:var(--text-dim);
+  cursor:pointer;
+  border:1px solid transparent;
+  border-bottom:none;
+  margin-bottom:-1px;
+  text-transform:uppercase;
+  transition:all 0.2s;
+}
+.tab:hover { color:var(--text); }
+.tab.active {
+  color:var(--accent);
+  border-color:var(--border);
+  border-bottom-color:var(--bg);
+  background:var(--bg2);
+}
+
+/* ===== CARDS GRID ===== */
+.cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(400px,1fr)); gap:14px; }
+
+.card {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-left:3px solid var(--text-dim);
+  position:relative;
+  overflow:hidden;
+  transition:border-color 0.3s;
+}
+.card.bull { border-left-color:var(--bull); }
+.card.bear { border-left-color:var(--bear); }
+.card.neutral { border-left-color:var(--neutral); }
+.card.loading { border-left-color:var(--text-dim); }
+
+.card-hdr {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:9px 13px;
+  border-bottom:1px solid var(--border);
+  background:rgba(0,0,0,0.4);
+}
+.card-sym {
+  font-family:'Orbitron',monospace;
+  font-size:15px;
+  font-weight:700;
+  color:var(--text-bright);
+}
+.card-tf-badge {
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;
+  color:var(--text-dim);
+  background:var(--bg3);
+  padding:2px 7px;
+  border:1px solid var(--border);
+}
+.card-price {
+  font-family:'Share Tech Mono',monospace;
+  font-size:17px;
+  color:var(--accent);
+  font-weight:bold;
+}
+
+.card-body { padding:11px 13px; }
+
+.inds {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
+  margin-bottom:9px;
+}
+.ind {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  padding:5px 7px;
+}
+.ind-l { font-size:10px; letter-spacing:1.5px; color:var(--text-dim); font-family:'Share Tech Mono',monospace; text-transform:uppercase; }
+.ind-v { font-family:'Share Tech Mono',monospace; font-size:14px; color:var(--text-bright); margin-top:1px; }
+
+.pattern-badge {
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:4px 11px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.pattern-badge.bull { background:rgba(0,255,136,0.08); color:var(--bull); border:1px solid rgba(0,255,136,0.25); }
+.pattern-badge.bear { background:rgba(255,61,0,0.08); color:var(--bear); border:1px solid rgba(255,61,0,0.25); }
+.pattern-badge.neutral { background:rgba(255,170,0,0.08); color:var(--warn); border:1px solid rgba(255,170,0,0.25); }
+.pattern-badge.changed { animation:flash 1s ease-in-out 3; }
+@keyframes flash { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.conf-bar { height:2px; background:var(--border); margin-bottom:9px; }
+.conf-fill { height:100%; transition:width 0.6s ease; }
+.conf-fill.high { background:var(--bull); width:100%; }
+.conf-fill.medium { background:var(--warn); width:60%; }
+.conf-fill.low { background:var(--bear); width:25%; }
+
+/* Analysis tabs per card */
+.analysis-tabs { display:flex; gap:0; margin-bottom:7px; border-bottom:1px solid var(--border); }
+.atab {
+  padding:5px 12px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+  letter-spacing:1px;
+  color:var(--text-dim);
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+  text-transform:uppercase;
+  transition:all 0.15s;
+}
+.atab:hover { color:var(--text); }
+.atab.active { color:var(--accent); border-bottom-color:var(--accent); }
+
+.analysis-content {
+  font-size:14px;
+  line-height:1.7;
+  color:var(--text);
+  min-height:60px;
+  font-family:'Exo 2',sans-serif;
+}
+.analysis-content.loading-text {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--text-dim);
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+}
+
+.spinner {
+  width:12px;height:12px;
+  border:2px solid var(--border);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+  flex-shrink:0;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+.card-foot {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:8px;
+  padding-top:7px;
+  border-top:1px solid var(--border);
+}
+.card-ts { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--text-dim); }
+.scan-time { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--text-dim); }
+
+/* Cross market panel */
+.cross-panel {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  padding:14px 16px;
+  margin-bottom:16px;
+  display:none;
+}
+.cross-panel.visible { display:block; }
+.cross-title {
+  font-family:'Orbitron',monospace;
+  font-size:14px;
+  color:var(--accent);
+  letter-spacing:2px;
+  margin-bottom:10px;
+}
+.cross-content { font-size:14px; line-height:1.7; color:var(--text); }
+
+.regime-badge {
+  display:inline-block;
+  padding:3px 12px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.regime-badge.bullish { background:rgba(0,255,136,0.1); color:var(--bull); border:1px solid rgba(0,255,136,0.3); }
+.regime-badge.bearish { background:rgba(255,61,0,0.1); color:var(--bear); border:1px solid rgba(255,61,0,0.3); }
+.regime-badge.chop { background:rgba(255,170,0,0.1); color:var(--warn); border:1px solid rgba(255,170,0,0.3); }
+
+.empty-state {
+  grid-column:1/-1;
+  text-align:center;
+  padding:60px 20px;
+  color:var(--text-dim);
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;
+  letter-spacing:2px;
+  border:1px dashed var(--border);
+}
+
+.err { color:var(--bear); font-family:'Share Tech Mono',monospace; font-size:11px; }
+
+/* Log view */
+#logView { display:none; }
+#logView.visible { display:block; }
+.log-table { width:100%; border-collapse:collapse; font-family:'Share Tech Mono',monospace; font-size:13px; }
+.log-table th {
+  padding:8px 12px;
+  text-align:left;
+  color:var(--accent);
+  background:var(--bg3);
+  border:1px solid var(--border);
+  font-size:12px;
+  letter-spacing:1px;
+}
+.log-table td {
+  padding:7px 12px;
+  border:1px solid var(--border);
+  color:var(--text);
+  vertical-align:top;
+}
+.log-table tr:nth-child(even) td { background:rgba(0,0,0,0.2); }
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+<div class="wrap">
+
+<!-- HEADER -->
+<header>
+  <div class="logo">VALKYRIE <em>//</em> CRYPTO INTEL <em>v2</em></div>
+  <div class="hdr-right">
+    <div class="status-pill">
+      <div class="dot" id="dot"></div>
+      <span id="statusTxt">STANDBY</span>
+    </div>
+    <span id="clock">--:--:-- UTC</span>
+  </div>
+</header>
+
+<!-- CONFIG -->
+<div class="config-row">
+  <div class="field">
+    <label>Trading Forge API</label>
+    <input type="text" id="apiBase" value="https://tradeforge.bsapservices.com/api" />
+  </div>
+  <div class="field">
+    <label>Ollama Endpoint</label>
+    <input type="text" id="ollamaBase" value="https://tradeforge.bsapservices.com/ollama" />
+  </div>
+  <div class="field">
+    <label>Ollama Model</label>
+    <input type="text" id="ollamaModel" value="qwen3-coder:30b" />
+  </div>
+  <div class="field">
+    <label>Interval</label>
+    <select id="intervalSel">
+      <option value="60">1 min</option>
+      <option value="300">5 min</option>
+      <option value="600" selected>10 min</option>
+      <option value="900">15 min</option>
+      <option value="1800">30 min</option>
+      <option value="3600">1 hour</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>Fallback Model</label>
+    <input type="text" id="ollamaFallback" value="qwen2.5-coder:14b" />
+  </div>
+</div>
+
+<!-- WATCHLIST -->
+<div class="wl-panel">
+  <div class="wl-top">
+    <span>Watchlist</span>
+    <span id="pairCount">0 pairs</span>
+  </div>
+  <div class="wl-tags" id="wlTags"></div>
+  <div class="wl-add">
+    <input type="text" id="symIn" placeholder="BTC/USDT" style="text-transform:uppercase" />
+    <select id="tfIn">
+      <option value="1m">1m</option>
+      <option value="5m">5m</option>
+      <option value="15m">15m</option>
+      <option value="30m">30m</option>
+      <option value="1h" selected>1h</option>
+      <option value="2h">2h</option>
+      <option value="4h">4h</option>
+      <option value="6h">6h</option>
+      <option value="12h">12h</option>
+      <option value="1d">1d</option>
+    </select>
+    <button class="btn btn-ghost btn-sm" onclick="addPair()">+ ADD</button>
+    <button class="btn btn-ghost btn-sm" onclick="loadDefaults()" style="color:var(--text-dim);border-color:var(--border)">DEFAULTS</button>
+    <button class="btn btn-ghost btn-sm" onclick="clearLogs()" style="color:var(--accent2);border-color:var(--accent2)">CLEAR LOGS</button>
+  </div>
+</div>
+
+<!-- RUN BAR -->
+<div class="run-bar">
+  <button class="btn btn-primary" id="startBtn" onclick="toggleMonitor()">▶ START</button>
+  <button class="btn btn-ghost" onclick="runOnce()">⚡ RUN ONCE</button>
+  <div class="countdown-wrap">
+    <span>Next scan:</span>
+    <div class="countdown-num" id="cdNum">--</div>
+  </div>
+  <div class="perf-log" id="perfLog">Last scan: --</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('monitor')" id="tab-monitor">Monitor</div>
+  <div class="tab" onclick="switchTab('cross')" id="tab-cross">Cross-Market</div>
+  <div class="tab" onclick="switchTab('logs')" id="tab-logs">Scan Logs</div>
+</div>
+
+<!-- CROSS MARKET PANEL -->
+<div class="cross-panel" id="crossPanel">
+  <div class="cross-title">⬡ CROSS-MARKET SYNTHESIS</div>
+  <div id="crossContent"><span style="color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:11px;">Triggered on pattern change — waiting for first change event...</span></div>
+</div>
+
+<!-- CARDS -->
+<div class="cards" id="cardsGrid">
+  <div class="empty-state">[ ADD PAIRS AND HIT START OR RUN ONCE ]</div>
+</div>
+
+<!-- LOG VIEW -->
+<div id="logView">
+  <div style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:2px;">SCAN HISTORY — 50 MAX PER PAIR/TF</span>
+    <select id="logFilter" onchange="renderLogs()" style="width:200px;">
+      <option value="all">All pairs</option>
+    </select>
+  </div>
+  <table class="log-table" id="logTable">
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Symbol</th>
+        <th>TF</th>
+        <th>Price</th>
+        <th>Pattern</th>
+        <th>Conf</th>
+        <th>RSI</th>
+        <th>Bias</th>
+        <th>Scan ms</th>
+      </tr>
+    </thead>
+    <tbody id="logBody"></tbody>
+  </table>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let watchlist = [];
+let scanLogs = {}; // key: "SYM_TF" → array of log entries (max 50)
+let lastPatterns = {}; // key: "SYM_TF" → {pattern, confidence}
+let cardAnalysis = {}; // key: "SYM_TF" → {snapshot, trend, cross}
+let monitorTimer = null;
+let cdTimer = null;
+let cdVal = 0;
+let isRunning = false;
+let currentTab = 'monitor';
+
+const CONF_MAP = { low:0.25, medium:0.6, high:0.9 };
+const MAX_LOG = 50;
+
+// ============================================================
+// STORAGE (persistent via window.storage API)
+// ============================================================
+async function saveState() {
+  try {
+    await window.storage.set('valk_watchlist', JSON.stringify(watchlist));
+    await window.storage.set('valk_logs', JSON.stringify(scanLogs));
+    await window.storage.set('valk_patterns', JSON.stringify(lastPatterns));
+  } catch(e) { console.warn('Storage save failed:', e); }
+}
+
+async function loadState() {
+  try {
+    const wl = await window.storage.get('valk_watchlist');
+    if (wl) watchlist = JSON.parse(wl.value);
+    const logs = await window.storage.get('valk_logs');
+    if (logs) scanLogs = JSON.parse(logs.value);
+    const pats = await window.storage.get('valk_patterns');
+    if (pats) lastPatterns = JSON.parse(pats.value);
+  } catch(e) {
+    watchlist = watchlist.length ? watchlist : [];
+  }
+}
+
+async function clearLogs() {
+  if (!confirm('Clear all scan logs?')) return;
+  scanLogs = {};
+  lastPatterns = {};
+  await saveState();
+  renderLogs();
+  alert('Logs cleared.');
+}
+
+// ============================================================
+// CLOCK
+// ============================================================
+setInterval(() => {
+  document.getElementById('clock').textContent = new Date().toUTCString().slice(17,25) + ' UTC';
+}, 1000);
+
+// ============================================================
+// WATCHLIST
+// ============================================================
+function loadDefaults() {
+  const defs = [
+    {symbol:'BTC/USDT',tf:'1h'},{symbol:'BTC/USDT',tf:'4h'},
+    {symbol:'ETH/USDT',tf:'1h'},{symbol:'ETH/USDT',tf:'4h'},
+    {symbol:'SOL/USDT',tf:'1h'},{symbol:'XRP/USDT',tf:'1h'},
+  ];
+  defs.forEach(d => { if (!watchlist.find(w=>w.symbol===d.symbol&&w.tf===d.tf)) watchlist.push(d); });
+  renderWL(); saveState();
+}
+
+function addPair() {
+  let sym = document.getElementById('symIn').value.trim().toUpperCase();
+  const tf = document.getElementById('tfIn').value;
+  if (!sym) return;
+  if (!sym.includes('/')) sym = sym.replace('USDT','') + '/USDT';
+  if (watchlist.find(w=>w.symbol===sym&&w.tf===tf)) return;
+  watchlist.push({symbol:sym, tf});
+  document.getElementById('symIn').value = '';
+  renderWL(); saveState();
+}
+
+document.getElementById('symIn').addEventListener('keydown', e => { if(e.key==='Enter') addPair(); });
+
+function removePair(sym, tf) {
+  watchlist = watchlist.filter(w=>!(w.symbol===sym&&w.tf===tf));
+  renderWL(); saveState();
+}
+
+function renderWL() {
+  const c = document.getElementById('wlTags');
+  document.getElementById('pairCount').textContent = watchlist.length + ' pairs';
+  if (!watchlist.length) {
+    c.innerHTML = '<span style="color:var(--text-dim);font-family:Share Tech Mono,monospace;font-size:11px;">No pairs — add above or hit DEFAULTS</span>';
+    return;
+  }
+  c.innerHTML = watchlist.map(w=>`
+    <div class="tag">
+      ${w.symbol}<span class="tag-tf">${w.tf}</span>
+      <span class="tag-x" onclick="removePair('${w.symbol}','${w.tf}')">×</span>
+    </div>`).join('');
+}
+
+// ============================================================
+// MONITOR CONTROL
+// ============================================================
+function toggleMonitor() {
+  isRunning ? stopMonitor() : startMonitor();
+}
+
+function startMonitor() {
+  if (!watchlist.length) { alert('Add pairs first.'); return; }
+  isRunning = true;
+  document.getElementById('startBtn').textContent = '■ STOP';
+  document.getElementById('startBtn').className = 'btn btn-stop';
+  setStatus('active');
+  runScan();
+  startCd();
+  const secs = parseInt(document.getElementById('intervalSel').value);
+  monitorTimer = setInterval(() => { runScan(); startCd(); }, secs * 1000);
+}
+
+function stopMonitor() {
+  isRunning = false;
+  clearInterval(monitorTimer);
+  clearInterval(cdTimer);
+  document.getElementById('startBtn').textContent = '▶ START';
+  document.getElementById('startBtn').className = 'btn btn-primary';
+  document.getElementById('cdNum').textContent = '--';
+  setStatus('standby');
+}
+
+function runOnce() {
+  if (!watchlist.length) { alert('Add pairs first.'); return; }
+  runScan();
+}
+
+function setStatus(s) {
+  const dot = document.getElementById('dot');
+  const txt = document.getElementById('statusTxt');
+  dot.className = 'dot';
+  if (s==='active') { dot.classList.add('active'); txt.textContent = 'ACTIVE'; }
+  else if (s==='scanning') { dot.classList.add('scanning'); txt.textContent = 'SCANNING'; }
+  else { txt.textContent = 'STANDBY'; }
+}
+
+function startCd() {
+  clearInterval(cdTimer);
+  cdVal = parseInt(document.getElementById('intervalSel').value);
+  updateCd();
+  cdTimer = setInterval(() => { if (--cdVal < 0) cdVal = 0; updateCd(); }, 1000);
+}
+
+function updateCd() {
+  const m = Math.floor(cdVal/60), s = cdVal%60;
+  document.getElementById('cdNum').textContent = m>0 ? `${m}:${String(s).padStart(2,'0')}` : `${s}s`;
+}
+
+// ============================================================
+// SCAN
+// ============================================================
+async function runScan() {
+  setStatus('scanning');
+  const scanStart = Date.now();
+  initCards();
+  await Promise.all(watchlist.map(p => scanPair(p)));
+  const elapsed = ((Date.now()-scanStart)/1000).toFixed(1);
+  document.getElementById('perfLog').textContent = `Last scan: ${elapsed}s — ${new Date().toUTCString().slice(17,25)} UTC`;
+  if (isRunning) setStatus('active');
+  else setStatus('standby');
+  await saveState();
+  renderLogs();
+}
+
+function initCards() {
+  const grid = document.getElementById('cardsGrid');
+  // Remove cards not in watchlist
+  grid.querySelectorAll('.card').forEach(c => {
+    const id = c.dataset.id;
+    const [sym,tf] = id.split('||');
+    if (!watchlist.find(w=>w.symbol===sym&&w.tf===tf)) c.remove();
+  });
+  // Init/reset cards for current watchlist
+  watchlist.forEach(p => {
+    const id = `${p.symbol}||${p.tf}`;
+    let card = document.querySelector(`[data-id="${id}"]`);
+    if (!card) {
+      card = document.createElement('div');
+      card.className = 'card loading';
+      card.dataset.id = id;
+      grid.appendChild(card);
+    }
+    card.innerHTML = `
+      <div class="card-hdr">
+        <div class="card-sym">${p.symbol}</div>
+        <div class="card-tf-badge">${p.tf}</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);display:flex;align-items:center;gap:6px;"><div class="spinner"></div>FETCHING</div>
+      </div>
+      <div class="card-body"><div class="analysis-content loading-text"><div class="spinner"></div>Waiting...</div></div>`;
+  });
+  // Clear empty state
+  const empty = grid.querySelector('.empty-state');
+  if (empty && watchlist.length) empty.remove();
+}
+
+async function scanPair(pair) {
+  const id = `${pair.symbol}||${pair.tf}`;
+  const card = document.querySelector(`[data-id="${id}"]`);
+  const pairStart = Date.now();
+
+  try {
+    const base = document.getElementById('apiBase').value.replace(/\/$/,'');
+    const sym = pair.symbol; // API expects literal SOL/USDT not encoded
+    const tf = pair.tf;
+
+    const [liveRes, patRes, summaryRes] = await Promise.all([
+      fetch(`${base}/live_data?symbol=${sym}&timeframe=${tf}&limit=300`),
+      fetch(`${base}/classify_pattern?symbol=${sym}&timeframe=${tf}&limit=300`),
+      fetch(`${base}/quick_summary?symbol=${sym}&timeframe=${tf}&limit=300`)
+    ]);
+
+    const live = await liveRes.json();
+    const pat = await patRes.json();
+    const quickSummary = await summaryRes.json().catch(() => null);
+
+    // Detect pattern change
+    const key = id;
+    const prevConf = CONF_MAP[lastPatterns[key]?.confidence] || 0;
+    const currConf = CONF_MAP[pat.confidence] || 0;
+    const patLabel = pat.pattern || pat.label || 'unknown';
+    const patternChanged = lastPatterns[key]?.pattern !== patLabel || Math.abs(currConf - prevConf) > 0.2;
+
+    // Log entry
+    const logEntry = {
+      ts: new Date().toISOString(),
+      price: live.last_price,
+      pattern: patLabel,
+      confidence: pat.confidence,
+      rsi: live.latest_indicators?.rsi_14?.toFixed(2),
+      ema20: live.latest_indicators?.ema_20?.toFixed(4),
+      ema50: live.latest_indicators?.ema_50?.toFixed(4),
+      ema200: live.latest_indicators?.ema_200?.toFixed(4),
+      atr: live.latest_indicators?.atr_14,
+      patternChanged,
+      quickSummary: quickSummary?.summary || quickSummary?.text || null,
+      scanMs: Date.now() - pairStart
+    };
+
+    if (!scanLogs[key]) scanLogs[key] = [];
+    scanLogs[key].unshift(logEntry);
+    if (scanLogs[key].length > MAX_LOG) scanLogs[key] = scanLogs[key].slice(0, MAX_LOG);
+
+    lastPatterns[key] = { pattern: patLabel, confidence: pat.confidence };
+
+    // Render card shell
+    renderCardShell(card, live, pat, pair, patternChanged, logEntry.scanMs);
+
+    // Layer 1 — use quick_summary from API first, fall back to Ollama
+    let snap;
+    const qText = quickSummary?.summary || quickSummary?.text || quickSummary?.overview || null;
+    if (qText) {
+      snap = { short_summary: qText, current_pattern: patLabel, confidence: CONF_MAP[pat.confidence] || 0.5 };
+      updateCardTab(id, 'snap', snap);
+    } else {
+      snap = await ollamaLayer1(live, pat);
+      updateCardTab(id, 'snap', snap);
+    }
+    cardAnalysis[id] = cardAnalysis[id] || {};
+    cardAnalysis[id].snap = snap;
+
+    // Layer 2 — Trend
+    const history = scanLogs[key].slice(0, 10);
+    const trend = await ollamaLayer2(live, pat, history);
+    updateCardTab(id, 'trend', trend);
+    cardAnalysis[id].trend = trend;
+
+    // Layer 3 — Cross-market (only on pattern change)
+    if (patternChanged) {
+      triggerCrossMarket();
+    }
+
+  } catch(err) {
+    if (card) {
+      card.className = 'card bear';
+      card.innerHTML = `
+        <div class="card-hdr">
+          <div class="card-sym">${pair.symbol}</div>
+          <div class="card-tf-badge">${pair.tf}</div>
+        </div>
+        <div class="card-body"><div class="err">⚠ ${err.message}</div></div>`;
+    }
+  }
+}
+
+// ============================================================
+// CARD RENDERING
+// ============================================================
+function renderCardShell(card, live, pat, pair, changed, scanMs) {
+  const ind = live.latest_indicators || {};
+  const isBull = ['breakout','uptrend','golden_cross','bullish'].some(v=>pat.pattern?.toLowerCase().includes(v));
+  const isBear = ['breakdown','downtrend','death_cross','bearish'].some(v=>pat.pattern?.toLowerCase().includes(v));
+  const biasClass = isBull ? 'bull' : isBear ? 'bear' : 'neutral';
+
+  card.className = `card ${biasClass}`;
+
+  const rsi = ind.rsi_14 ? ind.rsi_14.toFixed(1) : '--';
+  const rsiColor = rsi>70 ? 'var(--bear)' : rsi<30 ? 'var(--bull)' : 'var(--text-bright)';
+  const e20 = ind.ema_20 ? ind.ema_20.toFixed(2) : '--';
+  const e50 = ind.ema_50 ? ind.ema_50.toFixed(2) : '--';
+  const e200 = ind.ema_200 ? ind.ema_200.toFixed(2) : '--';
+  const atr = ind.atr_14 ? ind.atr_14.toFixed(4) : '--';
+  const conf = pat.confidence || 'low';
+  const id = `${pair.symbol}||${pair.tf}`;
+
+  card.innerHTML = `
+    <div class="card-hdr">
+      <div class="card-sym">${pair.symbol}</div>
+      <div class="card-tf-badge">${pair.tf}</div>
+      <div class="card-price">$${live.last_price || '--'}</div>
+    </div>
+    <div class="card-body">
+      <div class="pattern-badge ${biasClass} ${changed ? 'changed' : ''}">
+        ${isBull?'▲':isBear?'▼':'◆'} ${(pat.pattern||'unknown').toUpperCase().replace(/_/g,' ')}
+        &nbsp;|&nbsp;${conf.toUpperCase()}${changed?' ⚡ CHANGED':''}
+      </div>
+      <div class="conf-bar"><div class="conf-fill ${conf}"></div></div>
+      <div class="inds">
+        <div class="ind"><div class="ind-l">EMA 20</div><div class="ind-v">${e20}</div></div>
+        <div class="ind"><div class="ind-l">EMA 50</div><div class="ind-v">${e50}</div></div>
+        <div class="ind"><div class="ind-l">EMA 200</div><div class="ind-v">${e200}</div></div>
+        <div class="ind"><div class="ind-l">RSI 14</div><div class="ind-v" style="color:${rsiColor}">${rsi}</div></div>
+        <div class="ind"><div class="ind-l">ATR 14</div><div class="ind-v">${atr}</div></div>
+        <div class="ind"><div class="ind-l">CANDLES</div><div class="ind-v">${live.candles_count||'--'}</div></div>
+      </div>
+      <div class="analysis-tabs">
+        <div class="atab active" data-tab="snap" onclick="switchAnalysisTab('${id}','snap')">SNAPSHOT</div>
+        <div class="atab" data-tab="trend" onclick="switchAnalysisTab('${id}','trend')">TREND</div>
+        <div class="atab" data-tab="history" onclick="switchAnalysisTab('${id}','history')">HISTORY</div>
+      </div>
+      <div class="analysis-content loading-text" id="ac-snap-${id.replace(/[^a-zA-Z0-9]/g,'_')}">
+        <div class="spinner"></div>Layer 1 analyzing...
+      </div>
+      <div class="analysis-content" id="ac-trend-${id.replace(/[^a-zA-Z0-9]/g,'_')}" style="display:none">
+        <div class="loading-text"><div class="spinner"></div>Layer 2 analyzing...</div>
+      </div>
+      <div class="analysis-content" id="ac-history-${id.replace(/[^a-zA-Z0-9]/g,'_')}" style="display:none">
+        ${renderMiniHistory(id)}
+      </div>
+      <div class="card-foot">
+        <div class="card-ts">${new Date().toUTCString().slice(0,25)}</div>
+        <div class="scan-time">${scanMs}ms</div>
+      </div>
+    </div>`;
+}
+
+function renderMiniHistory(id) {
+  const logs = scanLogs[id] || [];
+  if (!logs.length) return '<span style="color:var(--text-dim);font-family:Share Tech Mono,monospace;font-size:10px;">No history yet</span>';
+  return `<table style="width:100%;font-family:Share Tech Mono,monospace;font-size:10px;border-collapse:collapse;">
+    <tr style="color:var(--text-dim)"><td>TIME</td><td>PRICE</td><td>PATTERN</td><td>RSI</td></tr>
+    ${logs.slice(0,8).map(l=>`<tr style="color:var(--text)">
+      <td>${l.ts.slice(11,19)}</td>
+      <td>$${l.price}</td>
+      <td style="color:${l.patternChanged?'var(--warn)':'var(--text)'}">${(l.pattern||'?').toUpperCase().slice(0,12)}</td>
+      <td>${l.rsi||'--'}</td>
+    </tr>`).join('')}
+  </table>`;
+}
+
+function switchAnalysisTab(id, tab) {
+  const safeId = id.replace(/[^a-zA-Z0-9]/g,'_');
+  ['snap','trend','history'].forEach(t => {
+    const el = document.getElementById(`ac-${t}-${safeId}`);
+    if (el) el.style.display = t===tab ? 'block' : 'none';
+  });
+  const card = document.querySelector(`[data-id="${id}"]`);
+  if (card) card.querySelectorAll('.atab').forEach(a => {
+    a.classList.toggle('active', a.dataset.tab===tab);
+  });
+  // Refresh history tab
+  if (tab==='history') {
+    const el = document.getElementById(`ac-history-${safeId}`);
+    if (el) el.innerHTML = renderMiniHistory(id);
+  }
+}
+
+function updateCardTab(id, tab, data) {
+  const safeId = id.replace(/[^a-zA-Z0-9]/g,'_');
+  const el = document.getElementById(`ac-${tab}-${safeId}`);
+  if (!el) return;
+  el.classList.remove('loading-text');
+  if (data && typeof data === 'object') {
+    const summary = data.short_summary || data.trend_summary || data.synthesis_summary || JSON.stringify(data, null, 2);
+    const bias = data.overall_bias || data.current_pattern || '';
+    const biasColor = bias==='bullish'?'var(--bull)':bias==='bearish'?'var(--bear)':'var(--text)';
+    el.innerHTML = `
+      ${bias ? `<div style="font-family:Share Tech Mono,monospace;font-size:10px;color:${biasColor};margin-bottom:5px;letter-spacing:1px;">${bias.toUpperCase()}</div>` : ''}
+      <div>${summary}</div>
+      ${data.divergences ? `<div style="margin-top:5px;font-size:11px;color:var(--warn);">⚡ ${data.divergences}</div>` : ''}
+      ${data.consecutive_signals>1 ? `<div style="margin-top:3px;font-size:10px;color:var(--text-dim);">Consecutive signals: ${data.consecutive_signals}</div>` : ''}`;
+  } else {
+    el.textContent = data || 'No analysis returned.';
+  }
+}
+
+// ============================================================
+// OLLAMA CALLS
+// ============================================================
+async function callOllama(prompt) {
+  const base = document.getElementById('ollamaBase').value.replace(/\/$/,'');
+  const model = document.getElementById('ollamaModel').value;
+
+  const res = await fetch(`${base}/api/generate`, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ model, prompt, stream:false, options:{ temperature:0.0 } })
+  });
+  const data = await res.json();
+  return data.response || '';
+}
+
+function parseJSON(raw) {
+  try {
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const start = clean.indexOf('{');
+    const end = clean.lastIndexOf('}');
+    if (start===-1||end===-1) return null;
+    return JSON.parse(clean.slice(start, end+1));
+  } catch { return null; }
+}
+
+async function ollamaLayer1(live, pat) {
+  const prompt = `You are a precise crypto technical analyst. Given this current snapshot JSON: ${JSON.stringify({
+    symbol: live.symbol,
+    timeframe: live.timeframe,
+    last_price: live.last_price,
+    pattern: pat.pattern,
+    confidence: pat.confidence,
+    indicators: live.latest_indicators,
+    last_3_candles: live.recent_candles?.slice(-3)
+  })}. Output ONLY valid JSON with no extra text, no markdown, no explanation:
+{"current_pattern":"string","confidence":0.0,"ema_status":"string","rsi_interpretation":"string","atr_vol":"string","short_summary":"string"}`;
+
+  try {
+    const raw = await callOllama(prompt);
+    return parseJSON(raw) || { short_summary: raw.slice(0,300) };
+  } catch(e) {
+    return { short_summary: 'Ollama unreachable — check endpoint and model name.' };
+  }
+}
+
+async function ollamaLayer2(live, pat, history) {
+  const condensed = history.map(h=>`${h.ts.slice(11,16)} $${h.price} ${h.pattern} rsi:${h.rsi}`).join(' | ');
+  const prompt = `You are a precise crypto technical analyst. Current snapshot: ${JSON.stringify({
+    symbol:live.symbol, timeframe:live.timeframe, price:live.last_price, pattern:pat.pattern,
+    confidence:pat.confidence, rsi:live.latest_indicators?.rsi_14?.toFixed(2)
+  })}. History (last ${history.length} scans): ${condensed}. Output ONLY valid JSON with no extra text:
+{"momentum_trend":"string","divergences":"string","consecutive_signals":0,"overall_bias":"bullish/neutral/bearish","trend_summary":"string"}`;
+
+  try {
+    const raw = await callOllama(prompt);
+    return parseJSON(raw) || { trend_summary: raw.slice(0,300) };
+  } catch(e) {
+    return { trend_summary: 'Ollama unreachable — check endpoint and model name.' };
+  }
+}
+
+async function triggerCrossMarket() {
+  const crossContent = document.getElementById('crossContent');
+  crossContent.innerHTML = '<div class="loading-text"><div class="spinner"></div>Running cross-market synthesis...</div>';
+
+  const allStates = watchlist.map(p => {
+    const id = `${p.symbol}||${p.tf}`;
+    const logs = scanLogs[id] || [];
+    const last = logs[0] || {};
+    return {
+      symbol: p.symbol,
+      timeframe: p.tf,
+      price: last.price,
+      pattern: last.pattern,
+      confidence: last.confidence,
+      rsi: last.rsi,
+      patternChanged: last.patternChanged,
+      analysis: cardAnalysis[id]?.snap?.short_summary || ''
+    };
+  });
+
+  const prompt = `You are a crypto market intelligence analyst. Full watchlist current states: ${JSON.stringify(allStates)}. Analyze cross-asset correlations, market regime, leaders and laggards. Output ONLY valid JSON with no extra text:
+{"market_regime":"bullish/chop/bearish","leaders":["BTC"],"laggards":["XRP"],"probability_sector_move":0.0,"synthesis_summary":"string"}`;
+
+  try {
+    const raw = await callOllama(prompt);
+    const data = parseJSON(raw);
+    if (data) {
+      const regime = data.market_regime || 'chop';
+      crossContent.innerHTML = `
+        <div class="regime-badge ${regime}">${regime.toUpperCase()} REGIME</div>
+        <div style="display:flex;gap:16px;margin-bottom:10px;font-family:'Share Tech Mono',monospace;font-size:11px;">
+          <div><span style="color:var(--text-dim)">LEADERS: </span><span style="color:var(--bull)">${(data.leaders||[]).join(', ')}</span></div>
+          <div><span style="color:var(--text-dim)">LAGGARDS: </span><span style="color:var(--bear)">${(data.laggards||[]).join(', ')}</span></div>
+          <div><span style="color:var(--text-dim)">SECTOR MOVE P: </span><span style="color:var(--accent)">${((data.probability_sector_move||0)*100).toFixed(0)}%</span></div>
+        </div>
+        <div class="cross-content">${data.synthesis_summary || ''}</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dim);margin-top:8px;">Triggered: ${new Date().toUTCString().slice(0,25)}</div>`;
+    } else {
+      crossContent.innerHTML = `<div class="cross-content">${raw.slice(0,500)}</div>`;
+    }
+  } catch(e) {
+    crossContent.innerHTML = `<div class="err">Cross-market analysis failed: ${e.message}</div>`;
+  }
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(tab) {
+  currentTab = tab;
+  ['monitor','cross','logs'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('active', t===tab);
+  });
+  document.getElementById('cardsGrid').style.display = tab==='monitor' ? 'grid' : 'none';
+  document.getElementById('crossPanel').classList.toggle('visible', tab==='cross');
+  const lv = document.getElementById('logView');
+  lv.classList.toggle('visible', tab==='logs');
+  if (tab==='logs') renderLogs();
+}
+
+// ============================================================
+// LOGS
+// ============================================================
+function renderLogs() {
+  const filter = document.getElementById('logFilter').value;
+  const sel = document.getElementById('logFilter');
+
+  // Update filter options
+  const keys = Object.keys(scanLogs);
+  const current = sel.value;
+  sel.innerHTML = '<option value="all">All pairs</option>' +
+    keys.map(k=>`<option value="${k}" ${k===current?'selected':''}>${k.replace('||',' ')}</option>`).join('');
+
+  // Flatten logs
+  let rows = [];
+  keys.forEach(k => {
+    if (filter!=='all' && k!==filter) return;
+    const [sym,tf] = k.split('||');
+    (scanLogs[k]||[]).forEach(l => rows.push({...l, symbol:sym, tf}));
+  });
+  rows.sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+
+  const tbody = document.getElementById('logBody');
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-dim);padding:20px;">No logs yet</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.slice(0,200).map(r=>`
+    <tr>
+      <td>${r.ts.slice(0,19).replace('T',' ')}</td>
+      <td style="color:var(--accent)">${r.symbol}</td>
+      <td>${r.tf}</td>
+      <td style="color:var(--text-bright)">$${r.price}</td>
+      <td style="color:${r.patternChanged?'var(--warn)':'var(--text)'}">${(r.pattern||'?').toUpperCase()}${r.patternChanged?' ⚡':''}</td>
+      <td>${r.confidence||'?'}</td>
+      <td style="color:${r.rsi>70?'var(--bear)':r.rsi<30?'var(--bull)':'var(--text)'}">${r.rsi||'--'}</td>
+      <td style="color:${r.overall_bias==='bullish'?'var(--bull)':r.overall_bias==='bearish'?'var(--bear)':'var(--text)'}">${r.overall_bias||'--'}</td>
+      <td>${r.scanMs||'--'}</td>
+    </tr>`).join('');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+(async () => {
+  await loadState();
+  renderWL();
+  renderLogs();
+})();
+</script>
+</body>
+</html>

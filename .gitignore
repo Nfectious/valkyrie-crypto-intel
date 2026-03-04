@@ -1,0 +1,4 @@
+.env
+docker/ollama_data/
+*.log
+.DS_Store
