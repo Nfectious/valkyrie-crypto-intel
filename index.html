@@ -491,6 +491,101 @@ select option { background:var(--bg3); }
   vertical-align:top;
 }
 .log-table tr:nth-child(even) td { background:rgba(0,0,0,0.2); }
+
+/* ===== MOBILE — CHARCOAL THEME ===== */
+@media (max-width: 768px) {
+  :root {
+    --bg: #1a1a1a;
+    --bg2: #222222;
+    --bg3: #2a2a2a;
+    --border: #3a3a3a;
+    --border2: #4a4a4a;
+    --text: #d0e8f0;
+    --text-dim: #7a9aaa;
+    --text-bright: #ffffff;
+    --panel: rgba(30,30,30,0.98);
+  }
+
+  .wrap { padding:10px 12px; }
+
+  /* Header */
+  header { padding:10px 14px; flex-wrap:wrap; gap:8px; }
+  .logo { font-size:17px; letter-spacing:2px; }
+  .hdr-right { font-size:12px; gap:10px; }
+  #clock { display:none; }
+
+  /* Config row — stack vertically */
+  .config-row {
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  .config-row .field:first-child {
+    grid-column: 1 / -1;
+  }
+
+  /* Watchlist */
+  .wl-add { flex-wrap:wrap; gap:6px; }
+  .wl-add input { min-width:0; flex:1 1 120px; }
+  .wl-add select { width:75px; }
+  .btn-sm { font-size:11px; padding:6px 10px; height:30px; }
+  .tag { font-size:12px; }
+
+  /* Run bar */
+  .run-bar { flex-wrap:wrap; gap:8px; padding:8px 12px; }
+  .btn { font-size:12px; padding:8px 14px; }
+  .countdown-num { font-size:22px; }
+  .perf-log { font-size:11px; width:100%; text-align:left; }
+
+  /* Tabs */
+  .tab { padding:8px 14px; font-size:11px; letter-spacing:1px; }
+
+  /* Cards — single column, compact */
+  .cards { grid-template-columns:1fr; gap:10px; }
+
+  .card-hdr { padding:8px 11px; }
+  .card-sym { font-size:16px; }
+  .card-price { font-size:16px; }
+  .card-tf-badge { font-size:11px; }
+  .card-body { padding:9px 11px; }
+
+  /* Indicators — 3 col stays but bigger */
+  .inds { gap:4px; }
+  .ind { padding:5px 6px; }
+  .ind-l { font-size:9px; }
+  .ind-v { font-size:13px; }
+
+  /* Pattern badge */
+  .pattern-badge { font-size:11px; padding:4px 10px; }
+
+  /* Analysis text */
+  .analysis-content { font-size:13px; line-height:1.6; }
+  .atab { font-size:10px; padding:5px 10px; }
+
+  /* Cross market */
+  .cross-panel { padding:12px; }
+  .cross-title { font-size:13px; }
+  .cross-content { font-size:13px; }
+
+  /* Log table — scrollable */
+  #logView { overflow-x:auto; }
+  .log-table { font-size:11px; min-width:600px; }
+  .log-table th { padding:6px 8px; font-size:10px; }
+  .log-table td { padding:5px 8px; }
+
+  /* Empty state */
+  .empty-state { padding:40px 16px; font-size:11px; }
+
+  /* Countdown */
+  .countdown-wrap { font-size:13px; }
+}
+
+/* Extra small phones */
+@media (max-width: 400px) {
+  .logo { font-size:14px; }
+  .config-row { grid-template-columns:1fr; }
+  .tab { padding:7px 10px; font-size:10px; }
+}
+
 </style>
 </head>
 <body>
