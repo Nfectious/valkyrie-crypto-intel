@@ -2,7 +2,9 @@
 ### Self-Hosted Crypto Intelligence Monitor — Zero API Cost
 
 ![Status](https://img.shields.io/badge/status-active-00ff88)
+
 ![Cost](https://img.shields.io/badge/AI%20cost-%240.00-00ff88)
+
 ![Models](https://img.shields.io/badge/model-qwen3--coder%3A30b-00c8ff)
 
 A real-time cryptocurrency intelligence dashboard that runs **entirely on your own hardware**. No external AI APIs. No subscriptions. No data leaving your server.
@@ -40,9 +42,12 @@ Browser → nginx (HTTPS) → Trading Forge API (your server)
 ```
 Every AI inference call: $0.00
 
+<img width="1905" height="910" alt="initial_monitor_tab" src="https://github.com/user-attachments/assets/4c5b8983-a0df-411d-8bcc-74ba155a71f3" />
 ---
-
-![initial_monitor_tab.png](images/Valkyrie-Crypto-Intel-Photos)
+---<img width="1905" height="910" alt="initial_monitor_tab"<img width="1869" height="903" alt="cross_market_tab" src="https://github.com/user-attachments/assets/17e68156-6afe-416e-b428-3ce8fa2eb093" />
+---
+ src="https://github.c<img width="1867" height="900" alt="all_scans_tabs" src="https://github.com/user-attachments/assets/59786202-d35e-4d80-bf86-671f7e59814a" />
+om/user-attachments/assets/34dc9cab-cc28-492c-b15c-14e748777bcc" />0
 
 ---
 ## QUICK START — DOCKER
